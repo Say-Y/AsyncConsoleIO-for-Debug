@@ -41,7 +41,6 @@ namespace ACIO
 	};
 	class AsyncConsoleIO * g_AsyncConsoleIO = nullptr;
 
-	/// Do not write in both directions. NOT SAFE.
 	class AsyncConsoleIO
 	{
 	private:
@@ -97,7 +96,16 @@ namespace ACIO
 		}
 
 	public:
-		
+		void set_lock()
+		{
+			mtx_lock.lock();
+		}
+
+		void set_unlock()
+		{
+			mtx_lock.unlock();
+		}
+
 		/// <summary> Replaces an existing pointer if a duplicate key exists. </summary>
 		/// <param name="key"> Key </param>
 		/// <param name="ppValue"> Address of the variable. </param>
@@ -160,9 +168,6 @@ namespace ACIO
 
 			while (m_bLoop)
 			{
-				cin.clear();
-				cin.ignore(256, '\n');
-
 				cout << "Key: ";
 				string key;
 				cin >> key;
