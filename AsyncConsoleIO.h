@@ -24,7 +24,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 #include <Windows.h>
-#include <typeinfo>
 #include <iostream>
 #include <cassert>
 #include <map>
