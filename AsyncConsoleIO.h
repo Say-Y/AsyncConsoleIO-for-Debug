@@ -1,6 +1,4 @@
 #pragma once
-// AsyncConsoleIO V.1
-
 // Copyright (c) 2019 Say-Y(Hani Kim(Kim Han Byeol))
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
@@ -24,6 +22,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 
 #include <Windows.h>
+#include <mutex>
 #include <iostream>
 #include <cassert>
 #include <map>
@@ -53,8 +52,9 @@ namespace ACIO
 		};
 
 	private:
-		HANDLE  m_hThread = nullptr;
-		DWORD   m_dwThreadId = 0;
+		std::mutex	mtx_lock = {};
+		HANDLE		m_hThread = nullptr;
+		DWORD		m_dwThreadId = 0;
 		std::map<std::string, ACIOData> m_mapOrder;
 
 		bool m_bLoop = true;
@@ -104,7 +104,9 @@ namespace ACIO
 		/// <param name="iTypeSize"> Must be one of 1,2,3,4,8 </param>
 		void bind_data(std::string key, void ** ppValue, EKeyType eKeyType)
 		{
+			if (!m_hThread) return;
 			if (key.size() == 0) assert(false);
+			mtx_lock.lock();
 
 			auto iter = m_mapOrder.find(key);
 			if (iter == m_mapOrder.end())
@@ -116,6 +118,8 @@ namespace ACIO
 				(*iter).second.eKeyType = eKeyType;
 				(*iter).second.ppData = ppValue;
 			}
+
+			mtx_lock.unlock();
 		}
 
 		static AsyncConsoleIO * GetInst()
@@ -176,8 +180,10 @@ namespace ACIO
 						unsigned char inputData = 0;
 						cin >> inputData;
 
+						mtx_lock.lock();
 						unsigned char* pData = (unsigned char*)tACIOData.ppData;
 						*pData = inputData;
+						mtx_lock.unlock();
 						break;
 					}
 
@@ -186,8 +192,10 @@ namespace ACIO
 						WORD inputData = 0;
 						cin >> inputData;
 
+						mtx_lock.lock();
 						WORD* pData = (WORD*)tACIOData.ppData;
 						*pData = inputData;
+						mtx_lock.unlock();
 						break;
 					}
 
@@ -196,8 +204,10 @@ namespace ACIO
 						UINT inputData = 0;
 						cin >> inputData;
 
+						mtx_lock.lock();
 						UINT* pData = (UINT*)tACIOData.ppData;
 						*pData = inputData;
+						mtx_lock.unlock();
 						break;
 					}
 
@@ -206,8 +216,10 @@ namespace ACIO
 						float inputData = 0.f;
 						cin >> inputData;
 
+						mtx_lock.lock();
 						float* pData = (float*)tACIOData.ppData;
 						*pData = inputData;
+						mtx_lock.unlock();
 						break;
 					}
 
@@ -216,8 +228,10 @@ namespace ACIO
 						double inputData = 0;
 						cin >> inputData;
 
+						mtx_lock.lock();
 						double* pData = (double*)tACIOData.ppData;
 						*pData = inputData;
+						mtx_lock.unlock();
 						break;
 					}
 
@@ -226,8 +240,10 @@ namespace ACIO
 						unsigned __int64 inputData = 0;
 						cin >> inputData;
 
+						mtx_lock.lock();
 						unsigned __int64* pData = (unsigned __int64*)tACIOData.ppData;
 						*pData = inputData;
+						mtx_lock.unlock();
 						break;
 					}
 
@@ -259,7 +275,7 @@ namespace ACIO
 			if (m_hThread)
 			{
 				m_bLoop = false;
-				WaitForSingleObject(m_hThread, INFINITE);
+				//WaitForSingleObject(m_hThread, INFINITE);
 
 				CloseHandle(m_hThread);
 				m_hThread = nullptr;
