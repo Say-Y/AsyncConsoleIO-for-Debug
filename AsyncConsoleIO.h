@@ -1,7 +1,7 @@
 #pragma once
 // AsyncConsoleIO V.1
 
-// Copyright (c) <2019> <Hani Kim(Kim Han Byeol)>
+// Copyright (c) 2019 Say-Y(Hani Kim(Kim Han Byeol))
 // Permission is hereby granted, free of charge, to any person
 // obtaining a copy of this software and associated documentation
 // files(the "Software"), to deal in the Software without
