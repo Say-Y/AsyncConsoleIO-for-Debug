@@ -142,7 +142,7 @@ namespace ACIO
 			set_unlock();
 		}
 
-		/// <summary> The call portion overwrites the value entered by the user into the console.</summary>
+		/// <summary> At the call portion overwrites the value entered by the user into the console.</summary>
 		/// <param name="key"> Key to enter in console. </param>
 		/// <param name="ppValue"> Address of the variable. </param>
 		/// <param name="iTypeSize"> Must be one of 1,2,3,4,8 </param>
