@@ -53,10 +53,12 @@ namespace ACIO
 		};
 
 	private:
+		std::hash<std::string> m_Hasher;
+
 		std::mutex	mtx_lock = {};
 		HANDLE		m_hThread = nullptr;
 		DWORD		m_dwThreadId = 0;
-		std::map<std::string, ACIOData> m_mapOrder;
+		std::map<int, ACIOData> m_mapOrder;
 
 		bool m_bLoop = true;
 
@@ -115,14 +117,14 @@ namespace ACIO
 		void bind_data(std::string key, void ** ppValue, EKeyType eKeyType)
 		{
 			if (!m_hThread) assert(false);
-			if (key.size() == 0) assert(false);
+			//if (key.size() == 0) assert(false);
 
-			set_lock();
-
-			auto iter = m_mapOrder.find(key);
+			//set_lock();
+			size_t hashedKey = m_Hasher(key);
+			auto iter = m_mapOrder.find(hashedKey);
 			if (iter == m_mapOrder.end())
 			{
-				m_mapOrder.insert(make_pair(key, ACIOData{ ppValue, nullptr, eKeyType, false }));
+				m_mapOrder.insert(std::make_pair(hashedKey, ACIOData{ ppValue, nullptr, eKeyType, false }));
 			}
 			else
 			{
@@ -139,7 +141,7 @@ namespace ACIO
 				(*iter).second.eKeyType = eKeyType;
 			}
 
-			set_unlock();
+			//set_unlock();
 		}
 
 		/// <summary> It is overwritten with the value entered at the console at the time of the call.</summary>
@@ -149,14 +151,14 @@ namespace ACIO
 		void bind_data_forced(std::string key, void ** ppValue, EKeyType eKeyType)
 		{
 			if (!m_hThread) assert(false);
-			if (key.size() == 0) assert(false);
+			//if (key.size() == 0) assert(false);
 
-			set_lock();
-
-			auto iter = m_mapOrder.find(key);
+			//set_lock();
+			size_t hashedKey = m_Hasher(key);
+			auto iter = m_mapOrder.find(hashedKey);
 			if (iter == m_mapOrder.end())
 			{
-				m_mapOrder.insert(make_pair(key, ACIOData{ ppValue, nullptr, eKeyType, true }));
+				m_mapOrder.insert(std::make_pair(hashedKey, ACIOData{ ppValue, nullptr, eKeyType, true }));
 			}
 			else
 			{
@@ -177,7 +179,7 @@ namespace ACIO
 				}
 			}
 
-			set_unlock();
+			//set_unlock();
 		}
 
 		static AsyncConsoleIO * GetInst()
@@ -248,8 +250,8 @@ namespace ACIO
 				string key;
 				cin >> key;
 				if (clear_cin()) continue;
-
-				auto iter = m_mapOrder.find(key);
+				size_t hashedKey = m_Hasher(key);
+				auto iter = m_mapOrder.find(hashedKey);
 				if (iter != m_mapOrder.end())
 				{
 					ACIOData & tACIOData = (*iter).second;
