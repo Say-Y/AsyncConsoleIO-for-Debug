@@ -5,25 +5,20 @@ AsyncConsoleIO for Debug at Win32, MFC
 
 #include "AsyncConsoleIO.h"
 
-// Start
+- Start
+  - ACIO::g_AsyncConsoleIO = ACIO::AsyncConsoleIO::GetInst();
 
-ACIO::g_AsyncConsoleIO = ACIO::AsyncConsoleIO::GetInst();
+- Destroy
+  - ACIO::g_AsyncConsoleIO->DestroyInst();
 
-// Destroy
+- bind
+  - ACIO::g_AsyncConsoleIO->bind_data("x", (void**)&g_lx, ACIO::EKeyType::Float);
 
-ACIO::g_AsyncConsoleIO->DestroyInst();
+- Force value to be fixed
+  - ACIO::g_AsyncConsoleIO->bind_data_forced("b", (void**)&b, ACIO::EKeyType::Float);
+    - At Console -> Inupt value (ex. b 10)
+    - when is call bind_data_forced -> b = 10;
 
-// bind
-
-ACIO::g_AsyncConsoleIO->bind_data("x", (void**)&g_lx, ACIO::EKeyType::Float);
-
-// Force value to be fixed
-
-ACIO::g_AsyncConsoleIO->bind_data_forced("b", (void**)&b, ACIO::EKeyType::Float);
-- At Console -> Inupt value (ex. b 10)
-- when is call bind_data_forced -> b = 10;
-
-// Watch
-
-https://www.youtube.com/watch?v=iRV6-qBKSr4
+- Watch
+  - https://www.youtube.com/watch?v=iRV6-qBKSr4
 
