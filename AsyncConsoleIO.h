@@ -145,6 +145,19 @@ namespace ACIO
 		}
 
 	private:
+		template <typename T>
+		void output(const ACIOData & tACIOData)
+		{
+			using namespace std;
+			T inputData = 0;
+			cin >> inputData;
+
+			mtx_lock.lock();
+			T* pData = (T*)tACIOData.ppData;
+			*pData = inputData;
+			mtx_lock.unlock();
+		}
+
 		bool clear_cin()
 		{
 			using namespace std;
@@ -182,73 +195,37 @@ namespace ACIO
 					{
 					case EKeyType::Char:
 					{
-						unsigned char inputData = 0;
-						cin >> inputData;
-
-						mtx_lock.lock();
-						unsigned char* pData = (unsigned char*)tACIOData.ppData;
-						*pData = inputData;
-						mtx_lock.unlock();
+						output<unsigned char>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Word:
 					{
-						WORD inputData = 0;
-						cin >> inputData;
-
-						mtx_lock.lock();
-						WORD* pData = (WORD*)tACIOData.ppData;
-						*pData = inputData;
-						mtx_lock.unlock();
+						output<WORD>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Int:
 					{
-						UINT inputData = 0;
-						cin >> inputData;
-
-						mtx_lock.lock();
-						UINT* pData = (UINT*)tACIOData.ppData;
-						*pData = inputData;
-						mtx_lock.unlock();
+						output<int>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Float:
 					{
-						float inputData = 0.f;
-						cin >> inputData;
-
-						mtx_lock.lock();
-						float* pData = (float*)tACIOData.ppData;
-						*pData = inputData;
-						mtx_lock.unlock();
+						output<float>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Double:
 					{
-						double inputData = 0;
-						cin >> inputData;
-
-						mtx_lock.lock();
-						double* pData = (double*)tACIOData.ppData;
-						*pData = inputData;
-						mtx_lock.unlock();
+						output<double>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Int64:
 					{
-						unsigned __int64 inputData = 0;
-						cin >> inputData;
-
-						mtx_lock.lock();
-						unsigned __int64* pData = (unsigned __int64*)tACIOData.ppData;
-						*pData = inputData;
-						mtx_lock.unlock();
+						output<__int64>(tACIOData);
 						break;
 					}
 
