@@ -46,8 +46,10 @@ namespace ACIO
 	private:
 		struct ACIOData
 		{
-			EKeyType eKeyType = EKeyType::End;
 			void** ppData = nullptr;
+			void** ppUserInputData = nullptr;
+			EKeyType eKeyType = EKeyType::End;
+			bool bForced = false;
 		};
 
 	private:
@@ -107,27 +109,75 @@ namespace ACIO
 		}
 
 		/// <summary> Replaces an existing pointer if a duplicate key exists. </summary>
-		/// <param name="key"> Key </param>
+		/// <param name="key"> Key to enter in console. </param>
 		/// <param name="ppValue"> Address of the variable. </param>
 		/// <param name="iTypeSize"> Must be one of 1,2,3,4,8 </param>
 		void bind_data(std::string key, void ** ppValue, EKeyType eKeyType)
 		{
-			if (!m_hThread) return;
+			if (!m_hThread) assert(false);
 			if (key.size() == 0) assert(false);
-			mtx_lock.lock();
+
+			set_lock();
 
 			auto iter = m_mapOrder.find(key);
 			if (iter == m_mapOrder.end())
 			{
-				m_mapOrder.insert(make_pair(key, ACIOData{ eKeyType, ppValue }));
+				m_mapOrder.insert(make_pair(key, ACIOData{ ppValue, nullptr, eKeyType, false }));
 			}
 			else
 			{
-				(*iter).second.eKeyType = eKeyType;
+				if ((*iter).second.ppData != ppValue)
+					assert(false && "bind_data: It is different from the address previously registered.");
+
+				if ((*iter).second.bForced)
+					assert(false && "bind_data: Do not use with bind_data_forced.");
+
+				if ((*iter).second.eKeyType != eKeyType)
+					assert(false && "bind_data: Type is different.");
+
 				(*iter).second.ppData = ppValue;
+				(*iter).second.eKeyType = eKeyType;
 			}
 
-			mtx_lock.unlock();
+			set_unlock();
+		}
+
+		/// <summary> The call portion overwrites the value entered by the user into the console.</summary>
+		/// <param name="key"> Key to enter in console. </param>
+		/// <param name="ppValue"> Address of the variable. </param>
+		/// <param name="iTypeSize"> Must be one of 1,2,3,4,8 </param>
+		void bind_data_forced(std::string key, void ** ppValue, EKeyType eKeyType)
+		{
+			if (!m_hThread) assert(false);
+			if (key.size() == 0) assert(false);
+
+			set_lock();
+
+			auto iter = m_mapOrder.find(key);
+			if (iter == m_mapOrder.end())
+			{
+				m_mapOrder.insert(make_pair(key, ACIOData{ ppValue, nullptr, eKeyType, true }));
+			}
+			else
+			{
+				if ((*iter).second.ppData != ppValue)
+					assert(false && "bind_data_forced: It is different from the address previously registered.");
+
+				if (!(*iter).second.bForced)
+					assert(false && "bind_data_forced: Do not use with bind_data.");
+
+				if((*iter).second.eKeyType != eKeyType)
+					assert(false && "bind_data_forced: Type is different.");
+
+				(*iter).second.ppData = ppValue;
+
+				if ((*iter).second.ppUserInputData)
+				{
+					*((*iter).second.ppData) = *((*iter).second.ppUserInputData);
+				}
+			}
+
+			set_unlock();
 		}
 
 		static AsyncConsoleIO * GetInst()
@@ -144,15 +194,30 @@ namespace ACIO
 
 	private:
 		template <typename T>
-		void output(const ACIOData & tACIOData)
+		void user_input(ACIOData & tACIOData)
 		{
 			using namespace std;
 			T inputData = 0;
 			cin >> inputData;
 
 			mtx_lock.lock();
+
 			T* pData = (T*)tACIOData.ppData;
 			*pData = inputData;
+
+			// save user input
+			if (tACIOData.bForced)
+			{
+				if (!tACIOData.ppUserInputData)
+				{
+					T* tUserInputData = new T;
+					tACIOData.ppUserInputData = (void**)tUserInputData;
+				}
+
+				T* pUserInputData = (T*)tACIOData.ppUserInputData;
+				*pUserInputData = inputData;
+			}
+
 			mtx_lock.unlock();
 		}
 
@@ -187,43 +252,43 @@ namespace ACIO
 				auto iter = m_mapOrder.find(key);
 				if (iter != m_mapOrder.end())
 				{
-					ACIOData tACIOData = (*iter).second;
+					ACIOData & tACIOData = (*iter).second;
 
 					switch (tACIOData.eKeyType)
 					{
 					case EKeyType::Char:
 					{
-						output<unsigned char>(tACIOData);
+						user_input<unsigned char>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Word:
 					{
-						output<WORD>(tACIOData);
+						user_input<WORD>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Int:
 					{
-						output<int>(tACIOData);
+						user_input<int>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Float:
 					{
-						output<float>(tACIOData);
+						user_input<float>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Double:
 					{
-						output<double>(tACIOData);
+						user_input<double>(tACIOData);
 						break;
 					}
 
 					case EKeyType::Int64:
 					{
-						output<__int64>(tACIOData);
+						user_input<__int64>(tACIOData);
 						break;
 					}
 
@@ -260,6 +325,16 @@ namespace ACIO
 				CloseHandle(m_hThread);
 				m_hThread = nullptr;
 				m_dwThreadId = 0;
+
+				auto iter = m_mapOrder.begin();
+				auto iterEnd = m_mapOrder.end();
+
+				for (; iter != iterEnd; ++iter)
+				{
+					delete iter->second.ppUserInputData;
+					iter->second.ppUserInputData = nullptr;
+				}
+
 				m_mapOrder.clear();
 				g_AsyncConsoleIO = nullptr;
 			}
