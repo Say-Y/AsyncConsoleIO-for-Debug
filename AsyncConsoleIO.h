@@ -132,16 +132,14 @@ namespace ACIO
 
 		static AsyncConsoleIO * GetInst()
 		{
-			static AsyncConsoleIO instance;
-			if (!instance.m_hThread)
-				assert(false);
+			if(!g_AsyncConsoleIO) g_AsyncConsoleIO = new AsyncConsoleIO;
 
-			return &instance;
+			return g_AsyncConsoleIO;
 		}
 
 		void DestroyInst()
 		{
-			this->~AsyncConsoleIO();
+			delete g_AsyncConsoleIO;
 		}
 
 	private:
@@ -257,11 +255,13 @@ namespace ACIO
 			if (m_hThread)
 			{
 				m_bLoop = false;
-				//WaitForSingleObject(m_hThread, INFINITE);
+				WaitForSingleObject(m_hThread, INFINITE);
 
 				CloseHandle(m_hThread);
 				m_hThread = nullptr;
 				m_dwThreadId = 0;
+				m_mapOrder.clear();
+				g_AsyncConsoleIO = nullptr;
 			}
 #endif
 		}
