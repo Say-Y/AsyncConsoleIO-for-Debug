@@ -116,6 +116,7 @@ namespace ACIO
 		/// <param name="iTypeSize"> Must be one of 1,2,3,4,8 </param>
 		void bind_data(std::string key, void ** ppValue, EKeyType eKeyType)
 		{
+#ifdef USE_AsyncConsoleIO
 			if (!m_hThread) assert(false);
 			//if (key.size() == 0) assert(false);
 
@@ -142,6 +143,7 @@ namespace ACIO
 			}
 
 			//set_unlock();
+#endif
 		}
 
 		/// <summary> It is overwritten with the value entered at the console at the time of the call.</summary>
@@ -150,6 +152,7 @@ namespace ACIO
 		/// <param name="iTypeSize"> Must be one of 1,2,3,4,8 </param>
 		void bind_data_forced(std::string key, void ** ppValue, EKeyType eKeyType)
 		{
+#ifdef USE_AsyncConsoleIO
 			if (!m_hThread) assert(false);
 			//if (key.size() == 0) assert(false);
 
@@ -180,6 +183,7 @@ namespace ACIO
 			}
 
 			//set_unlock();
+#endif
 		}
 
 		static AsyncConsoleIO * GetInst()
