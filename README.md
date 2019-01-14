@@ -1,9 +1,9 @@
 # AsyncConsoleIO-for-Debug
 AsyncConsoleIO for Debug at Win32, MFC
 
-#define USE_AsyncConsoleIO
-
-#include "AsyncConsoleIO.h"
+- define
+  - #define USE_AsyncConsoleIO
+  - #include "AsyncConsoleIO.h"
 
 - Start
   - ACIO::g_AsyncConsoleIO = ACIO::AsyncConsoleIO::GetInst();
