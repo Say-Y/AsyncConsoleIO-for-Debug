@@ -312,9 +312,7 @@ namespace ACIO
 #ifdef USE_AsyncConsoleIO
 			if (!(m_hThread = CreateThread(NULL, 0, ThreadFunc, NULL, 0, &m_dwThreadId)))
 			{
-				MessageBox(NULL,
-					(LPCSTR)L"CreateThread failed.",
-					(LPCSTR)L"AsyncConsoleIO", MB_OK);
+				assert(false);
 				ExitProcess(3);
 			}
 #endif
