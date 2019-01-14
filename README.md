@@ -1,7 +1,7 @@
 # AsyncConsoleIO-for-Debug
 AsyncConsoleIO for Debug at Win32, MFC
 
-- define
+- Define
   - #define USE_AsyncConsoleIO
   - #include "AsyncConsoleIO.h"
 
@@ -11,7 +11,7 @@ AsyncConsoleIO for Debug at Win32, MFC
 - Destroy
   - ACIO::g_AsyncConsoleIO->DestroyInst();
 
-- bind
+- Bind
   - ACIO::g_AsyncConsoleIO->bind_data("x", (void**)&g_lx, ACIO::EKeyType::Float);
 
 - Force value to be fixed
