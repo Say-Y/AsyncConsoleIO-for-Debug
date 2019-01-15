@@ -13,6 +13,7 @@ AsyncConsoleIO for Debug at Win32, MFC
 
 - Bind
   - ACIO::g_AsyncConsoleIO->bind_data("x", (void**)&g_lx, ACIO::EKeyType::Float);
+  - ACIO::g_AsyncConsoleIO->bind_data_forced("y", (void**)&y, ACIO::EKeyType::Int);
 
 - Force value to be fixed
   - ACIO::g_AsyncConsoleIO->bind_data_forced("b", (void**)&b, ACIO::EKeyType::Float);
