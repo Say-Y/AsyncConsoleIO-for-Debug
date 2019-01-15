@@ -18,7 +18,7 @@ AsyncConsoleIO for Debug at Win32, MFC
   - ACIO::g_AsyncConsoleIO->bind_data_forced("b", (void**)&b, ACIO::EKeyType::Float);
     - At Console -> Inupt: key value (ex. b 10)
     - when is call bind_data_forced -> b = 10;
-    - At Console -> Input: failed (ex. a -)
+    - At Console -> Input: value failed (ex. a -)
     - when is call bind_Data_Forced -> a = default
 
 - Watch
