@@ -31,6 +31,7 @@ namespace ACIO
 {
 	enum class EKeyType
 	{
+		Bool,
 		Char,
 		Word,
 		Int,
@@ -171,7 +172,7 @@ namespace ACIO
 				if (!(*iter).second.bForced)
 					assert(false && "bind_data_forced: Do not use with bind_data.");
 
-				if((*iter).second.eKeyType != eKeyType)
+				if ((*iter).second.eKeyType != eKeyType)
 					assert(false && "bind_data_forced: Type is different.");
 
 				(*iter).second.ppData = ppValue;
@@ -188,7 +189,7 @@ namespace ACIO
 
 		static AsyncConsoleIO * GetInst()
 		{
-			if(!g_AsyncConsoleIO) g_AsyncConsoleIO = new AsyncConsoleIO;
+			if (!g_AsyncConsoleIO) g_AsyncConsoleIO = new AsyncConsoleIO;
 
 			return g_AsyncConsoleIO;
 		}
@@ -262,6 +263,12 @@ namespace ACIO
 
 					switch (tACIOData.eKeyType)
 					{
+					case EKeyType::Bool:
+					{
+						user_input<bool>(tACIOData);
+						break;
+					}
+
 					case EKeyType::Char:
 					{
 						user_input<unsigned char>(tACIOData);
