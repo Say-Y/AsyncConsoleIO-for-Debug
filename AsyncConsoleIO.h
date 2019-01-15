@@ -321,7 +321,7 @@ namespace ACIO
 			using namespace std;
 			T inputData = 0;
 			cin >> inputData;
-
+			bool bFfaled = clear_cin();
 			mtx_lock.lock();
 
 			T* pData = (T*)tACIOData.ppData;
@@ -335,9 +335,17 @@ namespace ACIO
 					T* tUserInputData = new T;
 					tACIOData.ppUserInputData = (void**)tUserInputData;
 				}
+				else if (bFfaled)
+				{
+					delete tACIOData.ppUserInputData;
+					tACIOData.ppUserInputData = nullptr;
+				}
 
-				T* pUserInputData = (T*)tACIOData.ppUserInputData;
-				*pUserInputData = inputData;
+				if (tACIOData.ppUserInputData)
+				{
+					T* pUserInputData = (T*)tACIOData.ppUserInputData;
+					*pUserInputData = inputData;
+				}
 			}
 
 			mtx_lock.unlock();
