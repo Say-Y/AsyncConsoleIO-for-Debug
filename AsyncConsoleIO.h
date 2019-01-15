@@ -139,8 +139,55 @@ namespace ACIO
 				if ((*iter).second.eKeyType != eKeyType)
 					assert(false && "bind_data: Type is different.");
 
-				(*iter).second.ppData = ppValue;
-				(*iter).second.eKeyType = eKeyType;
+				ACIOData data{ ppValue, nullptr, eKeyType, false };
+				switch ((*iter).second.eKeyType)
+				{
+				case EKeyType::Bool:
+				{
+					input_forced<bool>(data, **(bool **)ppValue);
+					break;
+				}
+
+				case EKeyType::Char:
+				{
+					input_forced<unsigned char>(data, **(unsigned char**)ppValue);
+					break;
+				}
+
+				case EKeyType::Word:
+				{
+					input_forced<WORD>(data, **(WORD**)ppValue);
+					break;
+				}
+
+				case EKeyType::Int:
+				{
+					input_forced<int>(data, **(int**)ppValue);
+					break;
+				}
+
+				case EKeyType::Float:
+				{
+					input_forced<float>(data, **(float**)ppValue);
+					break;
+				}
+
+				case EKeyType::Double:
+				{
+					input_forced<double>(data, **(double**)ppValue);
+					break;
+				}
+
+				case EKeyType::Int64:
+				{
+					input_forced<__int64>(data, **(__int64**)ppValue);
+					break;
+				}
+
+				default:
+					assert(false);
+					break;
+				}
 			}
 
 			//set_unlock();
@@ -175,11 +222,63 @@ namespace ACIO
 				if ((*iter).second.eKeyType != eKeyType)
 					assert(false && "bind_data_forced: Type is different.");
 
-				(*iter).second.ppData = ppValue;
-
 				if ((*iter).second.ppUserInputData)
 				{
-					*((*iter).second.ppData) = *((*iter).second.ppUserInputData);
+					switch ((*iter).second.eKeyType)
+					{
+					case EKeyType::Bool:
+					{
+						bool * pptr = (bool *)(*iter).second.ppUserInputData;
+						input_forced<bool>((*iter).second, (bool)*pptr);
+						break;
+					}
+
+					case EKeyType::Char:
+					{
+						char * pptr = (char *)(*iter).second.ppUserInputData;
+						input_forced<char>((*iter).second, (char)*pptr);
+						break;
+					}
+
+					case EKeyType::Word:
+					{
+						WORD * pptr = (WORD *)(*iter).second.ppUserInputData;
+						input_forced<WORD>((*iter).second, (WORD)*pptr);
+						break;
+					}
+
+					case EKeyType::Int:
+					{
+						int * pptr = (int *)(*iter).second.ppUserInputData;
+						input_forced<int>((*iter).second, (int)*pptr);
+						break;
+					}
+
+					case EKeyType::Float:
+					{
+						float * pptr = (float *)(*iter).second.ppUserInputData;
+						input_forced<float>((*iter).second, (float)*pptr);
+						break;
+					}
+
+					case EKeyType::Double:
+					{
+						double * pptr = (double *)(*iter).second.ppUserInputData;
+						input_forced<double>((*iter).second, (double)*pptr);
+						break;
+					}
+
+					case EKeyType::Int64:
+					{
+						__int64 * pptr = (__int64 *)(*iter).second.ppUserInputData;
+						input_forced<__int64>((*iter).second, (__int64)*pptr);
+						break;
+					}
+
+					default:
+						assert(false);
+						break;
+					}
 				}
 			}
 
@@ -200,6 +299,22 @@ namespace ACIO
 		}
 
 	private:
+		template <typename T>
+		void input_forced(ACIOData & tACIOData, T _inputData)
+		{
+			if (tACIOData.bForced)
+			{
+				if (!tACIOData.ppUserInputData)
+				{
+					T* tUserInputData = new T;
+					tACIOData.ppUserInputData = (void**)tUserInputData;
+				}
+
+				T* pUserInputData = (T*)tACIOData.ppData;
+				*pUserInputData = _inputData;
+			}
+		}
+
 		template <typename T>
 		void user_input(ACIOData & tACIOData)
 		{
