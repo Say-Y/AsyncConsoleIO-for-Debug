@@ -26,6 +26,7 @@
 #include <iostream>
 #include <cassert>
 #include <map>
+#include <string>
 
 namespace ACIO
 {
