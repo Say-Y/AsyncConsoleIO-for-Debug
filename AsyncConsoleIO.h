@@ -52,6 +52,11 @@ namespace ACIO
 			void** ppUserInputData = nullptr;
 			EKeyType eKeyType = EKeyType::End;
 			bool bForced = false;
+
+			ACIOData(void ** _ppData, void ** _ppUserInputData, EKeyType _eKeyType, bool _bForced)
+				: ppData(_ppData), ppUserInputData(_ppUserInputData), eKeyType(_eKeyType), bForced(_bForced)
+			{
+			}
 		};
 
 	private:
@@ -127,7 +132,7 @@ namespace ACIO
 			auto iter = m_mapOrder.find(hashedKey);
 			if (iter == m_mapOrder.end())
 			{
-				m_mapOrder.insert(std::make_pair(hashedKey, ACIOData{ ppValue, nullptr, eKeyType, false }));
+				m_mapOrder.insert(std::make_pair(hashedKey, ACIOData( ppValue, nullptr, eKeyType, false )));
 			}
 			else
 			{
