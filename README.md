@@ -25,3 +25,4 @@ AsyncConsoleIO for Debug at Win32, MFC
       - when is call bind_data_forced -> b = 10;
     - At Console -> Input: value failed (ex. a -)
       - when is call bind_data_forced -> a = default
+ㅇㅇ
